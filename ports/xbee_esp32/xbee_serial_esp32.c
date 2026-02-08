@@ -10,16 +10,17 @@
  * =======================================================================
  */
 /**
-	@addtogroup hal_efm32
+	@addtogroup hal_esp32
 	@{
-	@file xbee_serial_efm32.c
-	Serial Interface for XBee Module (EFM32 Microcontroller)
+	@file xbee_serial_esp32.c
+	Serial Interface for XBee Module (ESP32 Microcontroller)
 */
 // NOTE: Documentation for the public functions can be found in xbee/serial.h.
 
+#include "xbee_serial_config_esp32.h"
+#include "platform_config.h"
 #include "xbee/platform.h"
 #include "xbee/serial.h"
-#include "xbee_serial_config_efm32.h"
 #include "xbee/cbuf.h"
 #include <errno.h>
 

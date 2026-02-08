@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2010-2013 Digi International Inc.,
- * All rights not expressly granted are reserved.
+ * Copyright (c) 2010-2013 Digi International Inc., All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -343,25 +342,32 @@
 /// 1976, 1980, 1984, 1988, 1992, 1996) to get to ZigBee epoch of 1/1/2000.
 #define ZCL_TIME_EPOCH_DELTA_1970   ((UINT32_C(30) * 365 + 7) * 24 * 60 * 60)
 
-#ifdef XBEE_PLATFORM_HEADER
-   #include XBEE_PLATFORM_HEADER
-#elif defined __DC__
-   #include "../ports/rabbit/platform_config.h"
-#elif defined POSIX
-   #include "../ports/posix/platform_config.h"
-#elif defined __DOS__
-   // Note: at present, only Open Watcom compiler supported
-   // (can test for __WATCOMC__ preprocessor symbol, or
-   // __BORLANDC__ for Borland C++)
-   #include "../ports/dos/platform_config.h"
-#elif defined WIN32 || defined _WIN32 || defined _WIN32_ || defined __WIN32__ \
-   || defined __CYGWIN32__ || defined MINGW32
-   #include "../ports/win32/platform_config.h"
-#elif defined __MWERKS__ && defined __HC08__
-   #include "../ports/hcs08/platform_config.h"
-#else
-   #error "Unknown target"
-#endif
+/**
+ * NOTE: I commented these out, because couldn't figure out how to get
+ * XBEE_PLATFORM_HEADER macro working. It refers to platform specific config file
+ * platform_config.h, which is included by other files already.
+ */
+
+// #ifdef XBEE_PLATFORM_HEADER
+//    #include XBEE_PLATFORM_HEADER
+#include "../../ports/xbee_esp32/platform_config.h"
+// #elif defined __DC__
+//    #include "../ports/rabbit/platform_config.h"
+// #elif defined POSIX
+//    #include "../ports/posix/platform_config.h"
+// #elif defined __DOS__
+//    // Note: at present, only Open Watcom compiler supported
+//    // (can test for __WATCOMC__ preprocessor symbol, or
+//    // __BORLANDC__ for Borland C++)
+//    #include "../ports/dos/platform_config.h"
+// #elif defined WIN32 || defined _WIN32 || defined _WIN32_ || defined __WIN32__ \
+//    || defined __CYGWIN32__ || defined MINGW32
+//    #include "../ports/win32/platform_config.h"
+// #elif defined __MWERKS__ && defined __HC08__
+//    #include "../ports/hcs08/platform_config.h"
+// #else
+//    #error "Unknown target"
+// #endif
 
 #ifndef TRUE
    #define TRUE 1
