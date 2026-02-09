@@ -17,12 +17,16 @@
 */
 // NOTE: Documentation for the public functions can be found in xbee/serial.h.
 
+#include "esp_err.h"
+#include "hal/uart_types.h"
 #include "xbee_serial_config_esp32.h"
 #include "platform_config.h"
 #include "xbee/platform.h"
 #include "xbee/serial.h"
 #include "xbee/cbuf.h"
 #include <errno.h>
+#include "driver/uart.h"
+#include "driver/gpio.h"
 
 #define BUFFER_UPPER_BOUND	4  // how much space before rts is de-asserted
 #define	BUFFER_LOWER_BOUND	RX_BUFF_SIZE/3  // how much before it's re-asserted
@@ -51,10 +55,8 @@
 /* Local Prototypes */
 void checkRxBufferUpper(void);
 void checkRxBufferLower(void);
-void routeSerial(void);
 void serialInit(xbee_serial_t *serial);
 
-USART_TypeDef *usart = XBEE_USART;
 static xbee_cbuf_t *rx_buffer;
 static xbee_cbuf_t *tx_buffer;
 static uint8_t internal_rx_buffer[RX_BUFF_SIZE + XBEE_CBUF_OVERHEAD];
@@ -66,6 +68,7 @@ static bool_t		tx_break = FALSE;					/* are we breaking  */
 /******************************************************************************
  * IRQS
  *****************************************************************************/
+//TODO:
 void XBEE_RX_IRQ_NAME(void)
 {
 	uint32_t interruptFlags = USART_IntGetEnabled(XBEE_USART);
@@ -78,6 +81,7 @@ void XBEE_RX_IRQ_NAME(void)
 	}
 }
 
+//TODO:
 void XBEE_TX_IRQ_NAME(void)
 {
 	uint32_t interruptFlags = USART_IntGetEnabled(XBEE_USART);
@@ -120,93 +124,63 @@ void checkRxBufferLower(void)
 	}
 }
 
-/******************************************************************************
- * @brief This function may need to be changed based on target board
- *****************************************************************************/
-void routeSerial(void)
-{
-	usart->ROUTEPEN = USART_ROUTEPEN_RXPEN | USART_ROUTEPEN_CTSPEN;
-
-	/* Enable pins at correct UART/USART location. */
-	usart->ROUTELOC0 = ( usart->ROUTELOC0
-							& ~( _USART_ROUTELOC0_TXLOC_MASK | _USART_ROUTELOC0_RXLOC_MASK ))
-							 | ( XBEE_ROUTE_LOC_TX << _USART_ROUTELOC0_TXLOC_SHIFT )
-							 | ( XBEE_ROUTE_LOC_RX << _USART_ROUTELOC0_RXLOC_SHIFT );
-
-	usart->ROUTELOC1 = ( usart->ROUTELOC1 & ~( _USART_ROUTELOC1_CTSLOC_MASK)) |
-								( XBEE_ROUTE_LOC_CTS << _USART_ROUTELOC1_CTSLOC_SHIFT);
-}
-
 /* It should be safe to call this multiple times */
-void serialInit(xbee_serial_t *serial)
-{
-#ifdef EFM32_MICRIUM
-	RTOS_ERR err;
-	if (OSRunning == OS_STATE_OS_RUNNING) {
-		OSSchedLock(&err);
-		APP_RTOS_ASSERT_CRITICAL(err.Code == RTOS_ERR_NONE, ;);
-	}
-	CPU_INT_SRC_HANDLER_SET_NKA(XBEE_RX_IRQn + 16, &(XBEE_RX_IRQ_NAME));
-	CPU_INT_SRC_HANDLER_SET_NKA(XBEE_TX_IRQn + 16, &(XBEE_TX_IRQ_NAME));
-#endif // Don't allow context switching until after initialization
-	
+void serialInit(xbee_serial_t *serial) {
+    /* TODO: read and double check
+     * https://github.com/espressif/esp-idf/blob/v5.5.2/examples/peripherals/uart/uart_echo/main/uart_echo_example_main.c 
+     *
+     * also check hardware flow control config and use
+     * */
+
+    // RX and TX software ring buffers
 	rx_buffer = (xbee_cbuf_t *) internal_rx_buffer;
 	xbee_cbuf_init(rx_buffer, RX_BUFF_SIZE);
 
 	tx_buffer = (xbee_cbuf_t *) internal_tx_buffer;
 	xbee_cbuf_init(tx_buffer, TX_BUFF_SIZE);
 
-	/* Enable peripheral clocks */
-	CMU_ClockDivSet(cmuClock_HF, cmuClkDiv_1);
-	CMU_ClockEnable(cmuClock_HFPER, TRUE);
-	CMU_ClockEnable(cmuClock_GPIO, TRUE);
-	CMU_ClockEnable(XBEE_CLK, TRUE);
+    // UART configuration
+    const uart_config_t uart_config = {
+        .baud_rate = XBEE_UART_BAUD_RATE,
+        .data_bits = UART_DATA_8_BITS,
+        .stop_bits = UART_STOP_BITS_1,
+        .parity = UART_PARITY_DISABLE,
+        .flow_ctrl = UART_HW_FLOWCTRL_CTS,
+        .parity = UART_PARITY_DISABLE,
+        .flow_ctrl = UART_HW_FLOWCTRL_CTS,
+        .rx_flow_ctrl_thresh = 122,
+        .source_clk = UART_SCLK_DEFAULT
+    };
+    ESP_ERROR_CHECK(uart_param_config(XBEE_UART_NUMBER, &uart_config));
+    
+    // UART pins defined in xbee_serial_config_esp32.h
+    ESP_ERROR_CHECK(uart_set_pin(
+        XBEE_UART_NUMBER,
+        XBEE_TXPIN,
+        XBEE_RXPIN,
+        XBEE_RTSPIN,
+        XBEE_CTSPIN
+    ));
 
+    ESP_ERROR_CHECK(uart_driver_install(
+        XBEE_UART_NUMBER,
+        RX_BUFF_SIZE,
+        TX_BUFF_SIZE,
+        0, // event queue size
+        NULL, // TODO: add event queue
+        0 // interrupt allocation flags, use?
+    ));
 
-	/* Configure GPIO pins */
-	/* Config flow control pins */
-	GPIO_PinModeSet(XBEE_RTSPORT, XBEE_RTSPIN, gpioModePushPull, 0);
-	GPIO_PinOutClear(XBEE_RTSPORT,XBEE_RTSPIN);
-	GPIO_PinModeSet(XBEE_CTSPORT, XBEE_CTSPIN, gpioModeInput, 0);
-
-	/* Config Rx pin*/
-	GPIO_PinModeSet(XBEE_RXPORT, XBEE_RXPIN, gpioModeInputPull, 1);
-
-	USART_InitAsync_TypeDef init = USART_INITASYNC_DEFAULT;
-	init.enable = usartDisable;
-
-	USART_InitAsync(usart, &init);
-
-	routeSerial();
-
-	/* Clear previous RX and TX interrupts */
-	USART_IntClear(XBEE_USART, USART_IF_RXDATAV);
-	NVIC_ClearPendingIRQ(XBEE_RX_IRQn);
-	NVIC_ClearPendingIRQ(XBEE_TX_IRQn);
-
-	/* Enable interrupts */
-	USART_IntEnable(XBEE_USART, USART_IF_RXDATAV);
-	NVIC_EnableIRQ(XBEE_RX_IRQn);
-	NVIC_EnableIRQ(XBEE_TX_IRQn);
-	/* Finally enable it */
-	USART_Enable(usart, usartEnable);
+    uart_flush(XBEE_UART_NUMBER);
 
 	xbee_ser_break(serial, FALSE);
 	xbee_ser_flowcontrol(serial, TRUE);
-	
-	USART_IntSet(XBEE_USART, UART_IF_TXBL); //Trigger transfer check
-	
-#ifdef EFM32_MICRIUM
-	if (OSRunning == OS_STATE_OS_RUNNING) {
-		OSSchedUnlock(&err);
-		APP_RTOS_ASSERT_CRITICAL(err.Code == RTOS_ERR_NONE, ;);
-	}
-#endif // allow context switching after initialization
 }
 
 /******************************************************************************
  * PUBLIC FUNCTIONS
  *****************************************************************************/
+//TODO:
 bool_t xbee_ser_invalid(xbee_serial_t *serial)
 {
 	return (serial == NULL || serial->baudrate == 0);
@@ -217,6 +191,7 @@ const char *xbee_ser_portname(xbee_serial_t *serial)
 	return XBEE_USART_STRING;
 }
 
+//TODO:
 int xbee_ser_write(xbee_serial_t *serial, const void FAR *buffer, int length)
 {
 	int ret = 0;
@@ -236,6 +211,7 @@ int xbee_ser_write(xbee_serial_t *serial, const void FAR *buffer, int length)
 	return ret;
 }
 
+//TODO:
 int xbee_ser_read(xbee_serial_t *serial, void FAR *buffer, int bufsize)
 {
 	int ret;
@@ -257,6 +233,7 @@ int xbee_ser_read(xbee_serial_t *serial, void FAR *buffer, int bufsize)
 	return ret;
 }
 
+//TODO:
 int xbee_ser_putchar(xbee_serial_t *serial, uint8_t ch)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -274,6 +251,7 @@ int xbee_ser_putchar(xbee_serial_t *serial, uint8_t ch)
 	return -ENOSPC;
 }
 
+//TODO:
 int xbee_ser_getchar(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -292,6 +270,7 @@ int xbee_ser_getchar(xbee_serial_t *serial)
 	return ch;
 }
 
+//TODO:
 int xbee_ser_tx_free(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -300,6 +279,7 @@ int xbee_ser_tx_free(xbee_serial_t *serial)
 	return xbee_cbuf_free(tx_buffer);
 }
 
+//TODO:
 int xbee_ser_tx_used(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -308,6 +288,7 @@ int xbee_ser_tx_used(xbee_serial_t *serial)
 	return xbee_cbuf_used(tx_buffer);
 }
 
+//TODO:
 int xbee_ser_tx_flush(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -317,6 +298,7 @@ int xbee_ser_tx_flush(xbee_serial_t *serial)
 	return 0;
 }
 
+//TODO:
 int xbee_ser_rx_free(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -325,6 +307,7 @@ int xbee_ser_rx_free(xbee_serial_t *serial)
 	return xbee_cbuf_free(rx_buffer);
 }
 
+//TODO:
 int xbee_ser_rx_used(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -333,6 +316,7 @@ int xbee_ser_rx_used(xbee_serial_t *serial)
 	return xbee_cbuf_used(rx_buffer);
 }
 
+//TODO:
 int xbee_ser_rx_flush(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -342,6 +326,7 @@ int xbee_ser_rx_flush(xbee_serial_t *serial)
 	return 0;
 }
 
+//TODO:
 int xbee_ser_open(xbee_serial_t *serial, uint32_t baudrate)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -351,6 +336,7 @@ int xbee_ser_open(xbee_serial_t *serial, uint32_t baudrate)
 	return xbee_ser_baudrate(serial, baudrate);
 }
 
+//TODO:
 int xbee_ser_baudrate(xbee_serial_t *serial, uint32_t baudrate)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -376,6 +362,7 @@ int xbee_ser_baudrate(xbee_serial_t *serial, uint32_t baudrate)
 	return 0;
 }
 
+//TODO:
 int xbee_ser_close(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -391,6 +378,7 @@ int xbee_ser_close(xbee_serial_t *serial)
 	return 0;
 }
 
+//TODO:
 int xbee_ser_break(xbee_serial_t *serial, bool_t enabled)
 {
 	if (xbee_ser_invalid(serial)) {
@@ -414,6 +402,7 @@ int xbee_ser_break(xbee_serial_t *serial, bool_t enabled)
 	return 0;
 }
 
+//TODO:
 int xbee_ser_flowcontrol(xbee_serial_t *serial, bool_t enabled)
 {
 
@@ -438,6 +427,7 @@ int xbee_ser_flowcontrol(xbee_serial_t *serial, bool_t enabled)
 	return 0;
 }
 
+// TODO:
 int xbee_ser_set_rts(xbee_serial_t *serial, bool_t asserted)
 {
 	int ret;
@@ -455,6 +445,7 @@ int xbee_ser_set_rts(xbee_serial_t *serial, bool_t asserted)
 	return ret;
 }
 
+// TODO:
 int xbee_ser_get_cts(xbee_serial_t *serial)
 {
 	if (xbee_ser_invalid(serial)) {

@@ -10,9 +10,9 @@
  * =======================================================================
  */
 /**
-	@addtogroup hal_efm32
+	@addtogroup hal_esp32
 	@{
-	@file xbee_platform_efm32.c
+	@file xbee_platform_esp32.c
 	Serial configurations
 */
 #ifndef __SERIAL_CONFIG_H
@@ -20,23 +20,15 @@
 
 	#define RX_BUFF_SIZE		255				/* Receive buffer = 2^n -1 for some integer n) */
 	#define TX_BUFF_SIZE		RX_BUFF_SIZE	/* Transmit buffer (same as Rx buffer) */
-	#define USART_NUMBER		0				/* The USART peripheral number you are using */
-
+	#define XBEE_UART_NUMBER    1				/* The USART peripheral number you are using */
+    #define XBEE_UART_BAUD_RATE 115200
 
 	/* USART Pin Locations */
-	#define XBEE_TXPORT			gpioPortE		/* USART transmission port */
-	#define XBEE_TXPIN			10				/* USART transmission pin */
-	#define XBEE_RXPORT			gpioPortE		/* USART reception port */
-	#define XBEE_RXPIN			11				/* USART reception pin */
-	#define XBEE_RTSPORT		gpioPortE		/* USART RTS flow control port */
-	#define XBEE_RTSPIN			13				/* USART RTS flow control pin */
-	#define XBEE_CTSPORT		gpioPortB		/* USART CTS flow control port */
-	#define XBEE_CTSPIN			11				/* USART CTS flow control pin */
+	#define XBEE_TXPIN			17				/* UART1 transmission pin */
+	#define XBEE_RXPIN			18				/* UART1 reception pin */
+	#define XBEE_RTSPIN			19				/* UART1 RTS flow control pin */
+	#define XBEE_CTSPIN			20				/* UART1 CTS flow control pin */
 
-	/* USART Route Locations (use datasheet for mapping locations) */
-	#define TX_LOC				0
-	#define RX_LOC				0
-	#define CTS_LOC				5
 
 #endif /* __SERIAL_CONFIG_H */
 ///@}
