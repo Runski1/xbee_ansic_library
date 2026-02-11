@@ -70,11 +70,14 @@
 */
 
 int xbee_readline( char *buffer, int length){
-    if (!buffer || length < 1) { return -EINVAL;}
 
-    char c {'\0'};
-    static int bytes_read {0};
-    static char temp_buffer[XBEE_MAX_LINELENGTH] {'\0'};
+    if (!buffer || length < 1) {
+    return -EINVAL;
+    }
+
+    char c = '\0';
+    static int bytes_read = 0;
+    static char temp_buffer[XBEE_MAX_LINELENGTH] = {'\0'};
 
     while (usb_serial_jtag_read_bytes(&c, 1, 0) > 0) {
 

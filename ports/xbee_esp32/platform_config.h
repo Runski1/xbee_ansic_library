@@ -43,7 +43,9 @@
 
 	
 	typedef struct xbee_serial_t {
+        uint32_t        uart_number;
 		uint32_t		baudrate;
+		uint32_t		flow_control;
 	} xbee_serial_t;
 
     typedef bool bool_t;
