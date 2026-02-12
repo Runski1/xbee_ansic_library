@@ -75,24 +75,27 @@ int xbee_readline( char *buffer, int length){
     return -EINVAL;
     }
 
-    char c = '\0';
     static int bytes_read = 0;
     static char temp_buffer[XBEE_MAX_LINELENGTH] = {'\0'};
 
+    char c;
     while (usb_serial_jtag_read_bytes(&c, 1, 0) > 0) {
 
-            if (c == 0x04) return -ENODATA; // EOT (CTRL+D)
-            if (c == '\n' || c == '\r') { // copy string to buffer when \n or \r
-                int n = bytes_read < (length - 1) ? bytes_read : (length - 1);
-                memcpy(buffer, temp_buffer, n);
-                buffer[n] = '\0';
-                bytes_read = 0;
-                return n; // return num of bytes written to buffer
-            }
-            if (bytes_read < XBEE_MAX_LINELENGTH) {
+        if (c == 0x04) return -ENODATA; // EOT (CTRL+D)
+        if (c == '\n' || c == '\r') { // copy string to buffer when \n or \r
+            int n = bytes_read < (length - 1) ? bytes_read : (length - 1);
+            memcpy(buffer, temp_buffer, n);
+            buffer[n] = '\0';
+
+            printf("%s\n", buffer);
+            bytes_read = 0;
+            return n; // return num of bytes written to buffer
+        }
+        if (bytes_read < XBEE_MAX_LINELENGTH - 1) {
+    //        printf("%c", c);
             temp_buffer[bytes_read++] = c; // Add character to temp buffer
         }
-        }
+    }
     return -EAGAIN;
 
 }
