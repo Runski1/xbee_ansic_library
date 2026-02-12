@@ -43,9 +43,9 @@
 	}
 
 
-	void xbee_platform_init(void)
+	int xbee_platform_init(void)
 	{
-		return; //nothing to initialize here
+		return 0; //nothing to initialize here
 	}
 	
 /**
