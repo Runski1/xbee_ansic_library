@@ -360,7 +360,7 @@
 //    // (can test for __WATCOMC__ preprocessor symbol, or
 //    // __BORLANDC__ for Borland C++)
 //    #include "../ports/dos/platform_config.h"
-// #elif defined WIN32 || defined _WIN32 || defined _WIN32_ || defined __WIN32__ \
+// #elif defined WIN32 || defined _WIN32 || defined _WIN32_ || defined __WIN32__ 
 //    || defined __CYGWIN32__ || defined MINGW32
 //    #include "../ports/win32/platform_config.h"
 // #elif defined __MWERKS__ && defined __HC08__
