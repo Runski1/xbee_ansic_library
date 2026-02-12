@@ -75,6 +75,10 @@ void serialInit(xbee_serial_t *serial) {
      *      members required by the functions in xbee/serial.h.
      * */
 
+    // Check if UART driver is already installed
+    // Maybe not the best way, since uart config won't be changed in this case
+    if (uart_is_driver_installed(serial->uart_number)) return;
+
     // UART configuration
     const uart_config_t uart_config = {
         .baud_rate = serial->baudrate,
