@@ -4,7 +4,7 @@
 
 idf_component_register(
     SRCS 
-        ${XBEE_SRCS}
+#        ${XBEE_SRCS}
         "xbee_serial_esp32.c"
         "xbee_platform_esp32.c"
         "../../src/xbee/xbee_device.c"
