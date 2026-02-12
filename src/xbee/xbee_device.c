@@ -895,7 +895,7 @@ int _xbee_frame_dispatch( xbee_dev_t *xbee, const void FAR *frame,
    uint16_t length)
 {
    uint_fast8_t frametype, frameid;
-   bool_t dispatched;
+   int dispatched;
    const xbee_dispatch_table_entry_t *entry;
 
    if (! (xbee && frame && length))
