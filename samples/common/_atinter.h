@@ -13,6 +13,10 @@
 #ifndef _ATINTER_H_INCL
 #define _ATINTER_H_INCL
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "xbee/atcmd.h"
 #include "xbee/device.h"
 
@@ -26,13 +30,7 @@ int parseParameter (const char *paramstr, int16_t request);
 int xbee_cmd_callback( const xbee_cmd_response_t FAR *response);
 int process_command_remote( xbee_dev_t *xbee, const char *cmdstr,
          const addr64 FAR *ieee);
-#ifdef __cplusplus
-extern "C" {
-#endif
 int process_command( xbee_dev_t *xbee, const char *cmdstr);
-#ifdef __cplusplus
-}
-#endif
 void printATCmds( xbee_dev_t *xbee);
 
 enum {
@@ -70,5 +68,8 @@ typedef struct
 
 extern const command_t command_list[];
 extern const int command_count;
+#ifdef __cplusplus
+}
+#endif
 #endif   // _ATINTER_H_INCL
 
