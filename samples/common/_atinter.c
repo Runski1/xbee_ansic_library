@@ -192,7 +192,7 @@ int xbee_cmd_callback( const xbee_cmd_response_t FAR *response)
 int process_command_remote( xbee_dev_t *xbee, const char *cmdstr,
          const addr64 FAR *ieee)
 {
-   char cmdptr[2];
+   char cmdptr[3];
    const char *param;
    int16_t request;
 
@@ -207,6 +207,7 @@ int process_command_remote( xbee_dev_t *xbee, const char *cmdstr,
       // convert command to upper case
       cmdptr[0] = (char) toupper( (unsigned char)param[0]);
       cmdptr[1] = (char) toupper( (unsigned char)param[1]);
+      cmdptr[2] = '\0'; // null terminate the 3 byte command string
       param += 2;       // advance beyond two-letter command
    } while (memcmp( cmdptr, "AT", 2) == 0);     // skip leading AT
 
@@ -465,7 +466,7 @@ void printATCmds( xbee_dev_t *xbee)
             case XBEE_PROTOCOL_ZB:           flags |= FLAG_ZB;       break;
             case XBEE_PROTOCOL_SMARTENERGY:  flags |= FLAG_SE;       break;
             default:
-               printf( "Unknown protocol for firmware version 0x%04x.\n",
+               printf( "Unknown protocol for firmware version 0x%04lx.\n",
                   xbee->firmware_version);
                break;
          }
@@ -475,7 +476,7 @@ void printATCmds( xbee_dev_t *xbee)
             case XBEE_NODETYPE_ROUTER: flags |= FLAG_ROUTER;         break;
             case XBEE_NODETYPE_ENDDEV: flags |= FLAG_ENDDEV;         break;
             default:
-               printf( "Unknown node type for firmware version 0x%04x.\n",
+               printf( "Unknown node type for firmware version 0x%04lx.\n",
                   xbee->firmware_version);
                break;
          }
