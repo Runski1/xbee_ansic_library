@@ -56,7 +56,13 @@ typedef union {
 #define XBEE_SCAN_TYPE_WIFI            0x02
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 int xbee_scan_dump_response( xbee_dev_t *xbee, const void FAR *raw,
    uint16_t length, void FAR *context);
+#ifdef __cplusplus
+}
+#endif
 
 ///@}
