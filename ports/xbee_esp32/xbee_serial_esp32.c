@@ -267,6 +267,25 @@ int xbee_ser_close(xbee_serial_t *serial)
 	return 0;
 }
 
+/**
+   @brief
+   Returns a human-readable string describing the serial port.
+
+   For example, on a Windows machine this will be "COM1" or "COM999".
+   On a Rabbit, it will be a single letter, "A" through "F".
+   On Freescale HCS08, it will be something like "SCI1" or "SCI2".
+   On POSIX, the name of the device (e.g., "/dev/ttyS0")
+
+   Returns "(invalid)" if \a serial is invalid or not configured.
+
+   @param[in]  serial   port
+
+   @return  null-terminated string describing the serial port
+*/
+const char *xbee_ser_portname( xbee_serial_t *serial) {
+    return "xbee_ser_portname";
+}
+
 /******************************************************************************
  * STUBBED OUT FUNCTIONS
  *
