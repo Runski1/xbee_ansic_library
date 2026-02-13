@@ -12,6 +12,8 @@ idf_component_register(
         "../../src/util/swapbytes.c"
     INCLUDE_DIRS 
         "../../include"
+        "../../samples/common/"
+        "./"
     PRIV_REQUIRES
         "esp_timer"
         "esp_driver_usb_serial_jtag"
