@@ -438,7 +438,7 @@ int zcl_parse_attribute_record( const zcl_attribute_base_t FAR *entry,
    zcl_attribute_write_rec_t *write_rec)
 {
    uint16_t                         attribute;
-   uint8_t                          type;
+   uint8_t                          type = 0;
    uint8_t                          value_offset;  // where is value in buffer?
    int                              sizeof_type;
    zcl_attribute_base_t             fake_attribute;
@@ -1900,7 +1900,7 @@ int zcl_general_command( const wpan_envelope_t FAR *envelope,
 zigbee_zcl_debug
 const char *zcl_status_text( uint_fast8_t status)
 {
-   static char unknown[15];
+   static char unknown[21];
 
    switch (status)
    {
