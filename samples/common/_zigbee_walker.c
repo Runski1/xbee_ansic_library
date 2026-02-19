@@ -65,17 +65,17 @@ wpan_cluster_table_entry_t zcl_cluster_table[] =
    WPAN_CLUST_ENTRY_LIST_END
 };
 
-// Since we're not using a dynamic frame dispatch table, we need to define
-// it here.
-#include "xbee/atcmd.h"       // for XBEE_FRAME_HANDLE_LOCAL_AT
-#include "xbee/wpan.h"        // for XBEE_FRAME_HANDLE_RX_EXPLICIT
-const xbee_dispatch_table_entry_t xbee_frame_handlers[] =
-{
-   XBEE_FRAME_HANDLE_LOCAL_AT,
-   XBEE_FRAME_HANDLE_RX_EXPLICIT,
-// XBEE_FRAME_MODEM_STATUS_DEBUG,
-   XBEE_FRAME_TABLE_END
-};
+// // Since we're not using a dynamic frame dispatch table, we need to define
+// // it here.
+// #include "xbee/atcmd.h"       // for XBEE_FRAME_HANDLE_LOCAL_AT
+// #include "xbee/wpan.h"        // for XBEE_FRAME_HANDLE_RX_EXPLICIT
+// const xbee_dispatch_table_entry_t xbee_frame_handlers[] =
+// {
+//    XBEE_FRAME_HANDLE_LOCAL_AT,
+//    XBEE_FRAME_HANDLE_RX_EXPLICIT,
+// // XBEE_FRAME_MODEM_STATUS_DEBUG,
+//    XBEE_FRAME_TABLE_END
+// };
 
 struct _endpoints sample_endpoints = {
    ZDO_ENDPOINT(zdo_ep_state),
