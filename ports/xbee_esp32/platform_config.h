@@ -19,9 +19,14 @@
 #ifndef __XBEE_PLATFORM_ESP32
 #define __XBEE_PLATFORM_ESP32
 
+// verbose print for debugging
+
+// #define XBEE_ATCMD_VERBOSE
+// #define XBEE_DEVICE_VERBOSE
+// #define XBEE_SERIAL_VERBOSE
+
+
 // Necessary includes for ESP32 board
-
-
 	// stdint.h for int8_t, uint8_t, int16_t, etc. types
 	#include <stdint.h>
 	#include <errno.h>
@@ -32,6 +37,7 @@
 	#define _f_memset memset
 
 	// Must define since GDK doesn't have endian.h (the values must be unique)
+// // not sure if needed
 	#define LITTLE_ENDIAN 4321 
 	#define BIG_ENDIAN 1234    
 	#define BYTE_ORDER LITTLE_ENDIAN //This is hard-coded, but can be checked
