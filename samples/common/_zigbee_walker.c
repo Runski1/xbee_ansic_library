@@ -65,6 +65,7 @@ wpan_cluster_table_entry_t zcl_cluster_table[] =
    WPAN_CLUST_ENTRY_LIST_END
 };
 
+// EDIT HERE
 // // Since we're not using a dynamic frame dispatch table, we need to define
 // // it here.
 // #include "xbee/atcmd.h"       // for XBEE_FRAME_HANDLE_LOCAL_AT
