@@ -55,10 +55,9 @@ typedef union {
 } xbee_scan_response_t;
 
 // values for the as_type field of the ATAS response
-#define XBEE_SCAN_TYPE_ZIGBEE          0x01
+#define XBEE_SCAN_TYPE_ZIGBEE          0x02
 #if XBEE_WIFI_ENABLED
-#define XBEE_SCAN_TYPE_WIFI            0x02
-#endif
+#define XBEE_SCAN_TYPE_WIFI            0x01
 
 int xbee_scan_dump_response( xbee_dev_t *xbee, const void FAR *raw,
    uint16_t length, void FAR *context);
