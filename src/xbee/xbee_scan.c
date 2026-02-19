@@ -86,7 +86,7 @@ int xbee_scan_dump_response(xbee_dev_t *xbee, const void FAR *raw,
                     } else {
                         printf(
                             "CH%2u PAN:0x%04X %" PRIsFAR
-                            " J%u SP%u LQI:%3u RSSI:%d\n",
+                            " JOIN:%u SP%u LQI:%3u RSSI:%d\n",
                             atas->zigbee.channel, be16toh(atas->zigbee.pan_be),
                             addr64_format(buffer,
                                           &atas->zigbee.extended_pan_be),
