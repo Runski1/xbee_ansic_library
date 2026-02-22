@@ -115,6 +115,8 @@ enum xbee_frame_type {
    /// xbee_cmd_response_t). [ZigBee, DigiMesh, not Smart Energy]
    XBEE_FRAME_REMOTE_AT_RESPONSE       = 0x97,
 
+   XBEE_FRAME_EXTENDED_MODEM_STATUS    = 0x98,
+
    /// Over-the-Air Firmware Update Status [ZigBee, not Smart Energy]
    XBEE_FRAME_FW_UPDATE_STATUS         = 0xA0,
 
