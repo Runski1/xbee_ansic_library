@@ -19,10 +19,12 @@ idf_component_register(
         "../../samples/common/zigbee_walker.c"
         "../../src/zigbee/zigbee_zcl.c"
         "../../src/zigbee/zcl_types.c"
-        "../../src/zigbee/zigbee_zdo.c"
+        "../../src/zigbee/zigbee_zdo.c" # ZDO and ZDP
         "../../src/util/swapcpy.c"
         "../../src/zigbee/zcl_client.c"
-        "../../src/xbee/xbee_time.c"
+        "../../src/xbee/xbee_time.c" # implementation of time.h functions
+        "../../src/xbee/xbee_discovery.c" # ATND
+        "../../samples/common/_nodetable.c"
 
     INCLUDE_DIRS 
         "../../include"
