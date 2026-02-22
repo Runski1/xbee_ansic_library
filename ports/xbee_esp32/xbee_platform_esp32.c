@@ -87,7 +87,7 @@ int xbee_readline( char *buffer, int length){
             memcpy(buffer, temp_buffer, n);
             buffer[n] = '\0';
 
-            printf("%s\n", buffer);
+            //printf("%s\n", buffer);
             bytes_read = 0;
             return n; // return num of bytes written to buffer
         }

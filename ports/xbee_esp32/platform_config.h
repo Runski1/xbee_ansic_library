@@ -33,15 +33,17 @@
 	#include <inttypes.h>
     #include <stdbool.h>
 
+    // NOTE: Maybe redundant
 	#define _f_memcpy memcpy
 	#define _f_memset memset
 
+    // NOTE: Maybe redundant
 	// Must define since GDK doesn't have endian.h (the values must be unique)
-// // not sure if needed
 	#define LITTLE_ENDIAN 4321 
 	#define BIG_ENDIAN 1234    
 	#define BYTE_ORDER LITTLE_ENDIAN //This is hard-coded, but can be checked
 
+    // NOTE: Maybe redundant
 	// macros used to declare a packed structure (no alignment of elements)
     // The more-flexible XBEE_PACKED() replaced PACKED_STRUCT in 2019.
 	#define PACKED_STRUCT		struct __attribute__ ((__packed__))

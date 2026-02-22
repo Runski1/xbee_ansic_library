@@ -45,26 +45,12 @@ static bool_t		flow_control_enabled = TRUE;	/* is FC enabled?   */
 //toggled by xbee_ser_break, which is now stubbed out
 static bool_t		tx_break = FALSE;					/* are we breaking  */
 
-/**
- * NOTE: The original code implemented a lot of features here, such as:
- * * Buffer fill checking
- * * TX/RX interrupts
- * * Manual interrupt triggering
- * * utilized the drivers own ring buffer implementation cbuf.h
- * We're using ESP-IDF UART drivers so I've cut out a lot of stuff.
- *  - Matias
- */
 /******************************************************************************
  * LOCAL FUNCTIONS
  *****************************************************************************/
 
 void serialInit(xbee_serial_t *serial) {
     /**
-     * TODO:
-     * I need AT LEAST store the UART instance identity in xbee_serial_t
-     * (It's XBEE_UART_NUMBER here)
-     * and pass that as parameter. The uart_config could also be member of that 
-     * structure. 
      * This function is not defined in xbee/serial.h, so most likely it's
      * not called by anything in the driver
      *
