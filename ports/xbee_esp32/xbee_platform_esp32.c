@@ -10,19 +10,20 @@
  * =======================================================================
  */
 /**
-	@addtogroup hal_efm32
-	@{
-	@file xbee_platform_efm32.c
-	Platform-specific functions for use by the
-	XBee Driver on EFM32 uC platform.
-	Documented in platform.h
+        @addtogroup hal_efm32
+        @{
+        @file xbee_platform_efm32.c
+        Platform-specific functions for use by the
+        XBee Driver on EFM32 uC platform.
+        Documented in platform.h
 */
+#include "driver/usb_serial_jtag.h"
+#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_timer.h"
-#include <stdbool.h>
+#include "xbee_serial_config_esp32.h"
 #include <errno.h>
-#include "driver/usb_serial_jtag.h"
+#include <stdbool.h>
 #include <string.h>
 
 #define XBEE_MAX_LINELENGTH 256
@@ -30,24 +31,18 @@
 /**
  * Timer required by xbee driver to report elapsed time
  */
-	uint32_t xbee_millisecond_timer()
-	{
-		return (uint32_t) (esp_timer_get_time() / 1000ULL);
-	}
+uint32_t xbee_millisecond_timer() {
+    return (uint32_t)(esp_timer_get_time() / 1000ULL);
+}
 /**
  * Timer required by xbee driver to report elapsed time
  */
-	uint32_t xbee_seconds_timer()
-	{
-		return xbee_millisecond_timer() / 1000UL;
-	}
+uint32_t xbee_seconds_timer() { return xbee_millisecond_timer() / 1000UL; }
 
+int xbee_platform_init(void) {
+    return 0; // nothing to initialize here
+}
 
-	int xbee_platform_init(void)
-	{
-		return 0; //nothing to initialize here
-	}
-	
 /**
    @brief
    This function is a non-blocking version of gets(), used to read a line of
@@ -69,10 +64,10 @@
    @retval  -ENODATA User entered CTRL-D to end input.
 */
 
-int xbee_readline( char *buffer, int length){
+int xbee_readline(char *buffer, int length) {
 
     if (!buffer || length < 1) {
-    return -EINVAL;
+        return -EINVAL;
     }
 
     static int bytes_read = 0;
@@ -81,22 +76,25 @@ int xbee_readline( char *buffer, int length){
     char c;
     while (usb_serial_jtag_read_bytes(&c, 1, 0) > 0) {
 
-        if (c == 0x04) return -ENODATA; // EOT (CTRL+D)
+        if (c == 0x04)
+            return -ENODATA;          // EOT (CTRL+D)
         if (c == '\n' || c == '\r') { // copy string to buffer when \n or \r
             int n = bytes_read < (length - 1) ? bytes_read : (length - 1);
             memcpy(buffer, temp_buffer, n);
             buffer[n] = '\0';
 
-            //printf("%s\n", buffer);
+            // printf("%s\n", buffer);
             bytes_read = 0;
+#ifdef XBEE_SERIAL_ECHO_ON
+            printf("%s\n", buffer);
+#endif
             return n; // return num of bytes written to buffer
         }
         if (bytes_read < XBEE_MAX_LINELENGTH - 1) {
-    //        printf("%c", c);
+            //        printf("%c", c);
             temp_buffer[bytes_read++] = c; // Add character to temp buffer
         }
     }
     return -EAGAIN;
-
 }
 ///@}

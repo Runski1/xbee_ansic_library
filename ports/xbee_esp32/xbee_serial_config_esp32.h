@@ -29,6 +29,8 @@
 	#define XBEE_RTSPIN			19				/* UART1 RTS flow control pin */
 	#define XBEE_CTSPIN			20				/* UART1 CTS flow control pin */
 
+    #define XBEE_SERIAL_ECHO_ON 1
+
 
 #endif /* __SERIAL_CONFIG_H */
 ///@}
