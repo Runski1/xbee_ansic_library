@@ -10,11 +10,11 @@
  * =======================================================================
  */
 /**
-        @addtogroup hal_efm32
+        @addtogroup hal_esp32
         @{
-        @file xbee_platform_efm32.c
+        @file xbee_platform_esp32.c
         Platform-specific functions for use by the
-        XBee Driver on EFM32 uC platform.
+        XBee Driver on ESP32 uC platform.
         Documented in platform.h
 */
 #include "driver/usb_serial_jtag.h"
