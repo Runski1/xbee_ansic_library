@@ -23,7 +23,7 @@
 	extern "C" {
 #endif
 
-#define XBEE_DEBUG__
+//#define XBEE_DEBUG__
 //
 // verbose print for debugging
 
