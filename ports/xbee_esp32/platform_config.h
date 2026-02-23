@@ -19,6 +19,12 @@
 #ifndef __XBEE_PLATFORM_ESP32
 #define __XBEE_PLATFORM_ESP32
 
+#if defined(__cplusplus)
+	extern "C" {
+#endif
+
+#define XBEE_DEBUG__
+//
 // verbose print for debugging
 
 // #define XBEE_ATCMD_VERBOSE
@@ -61,13 +67,16 @@
 	#define XBEE_MS_TIMER_RESOLUTION 1 // Our timer has 1 ms resolution
 	#define ZCL_TIME_EPOCH_DELTA 0
 
-#if defined(__cplusplus)
-	extern "C" {
-#endif
 	int xbee_platform_init(void);
 	#define XBEE_PLATFORM_INIT() xbee_platform_init()
+
+#ifdef XBEE_DEBUG__
+    #define WPAN_APS_VERBOSE
+#endif
+
 #if defined(__cplusplus)
 	}
 #endif
+
 #endif /* __XBEE_PLATFORM_ESP32 */
 ///@}
