@@ -37,7 +37,7 @@
 #define	BUFFER_LOWER_BOUND	RX_BUFF_SIZE/3  // how much before it's re-asserted
 
 /* Local Prototypes */
-void serialInit(xbee_serial_t *serial);
+esp_err_t serialInit(xbee_serial_t *serial);
 
 
 // NOTE: AFAIK we don't need these here
@@ -49,7 +49,7 @@ static bool_t		tx_break = FALSE;					/* are we breaking  */
  * LOCAL FUNCTIONS
  *****************************************************************************/
 
-void serialInit(xbee_serial_t *serial) {
+esp_err_t serialInit(xbee_serial_t *serial) {
     /**
      * This function is not defined in xbee/serial.h, so most likely it's
      * not called by anything in the driver
@@ -63,27 +63,17 @@ void serialInit(xbee_serial_t *serial) {
 
     // Check if UART driver is already installed
     // Maybe not the best way, since uart config won't be changed in this case
-    if (uart_is_driver_installed(serial->uart_number)) return;
+    if (uart_is_driver_installed(serial->uart_number)) return ESP_FAIL;
 
-    // UART configuration
-    const uart_config_t uart_config = {
-        .baud_rate = serial->baudrate,
-        .data_bits = UART_DATA_8_BITS,
-        .stop_bits = UART_STOP_BITS_1,
-        .parity = UART_PARITY_DISABLE,
-        .flow_ctrl = serial->flow_control, // UART_HW_FLOWCTRL_CTS_RTS
-        .rx_flow_ctrl_thresh = 122,
-        .source_clk = UART_SCLK_DEFAULT
-    };
     /*
      * Either pass XBEE_UART_NUMBER as parameter to this function, or
      * store the UART number here to *serial
      */
-    ESP_ERROR_CHECK(uart_param_config(serial->uart_number, &uart_config));
+    ESP_ERROR_CHECK(uart_param_config(serial->uart_number, &serial->uart_config));
     
     // UART pins defined in xbee_serial_config_esp32.h
     ESP_ERROR_CHECK(uart_set_pin(
-        XBEE_UART_NUMBER,
+        serial->uart_number,
         XBEE_TXPIN,
         XBEE_RXPIN,
         XBEE_RTSPIN,
@@ -91,7 +81,7 @@ void serialInit(xbee_serial_t *serial) {
     ));
 
     ESP_ERROR_CHECK(uart_driver_install(
-        XBEE_UART_NUMBER,
+        serial->uart_number,
         RX_BUFF_SIZE,
         TX_BUFF_SIZE,
         0, // event queue size
@@ -103,6 +93,9 @@ void serialInit(xbee_serial_t *serial) {
 
 	xbee_ser_break(serial, FALSE);
 	xbee_ser_flowcontrol(serial, TRUE);
+
+    return ESP_OK;
+
 }
 
 /******************************************************************************
@@ -125,7 +118,7 @@ void serialInit(xbee_serial_t *serial) {
 bool_t xbee_ser_invalid(xbee_serial_t *serial)
 {
     //UART_NUM_MAX -1 is maximum possible uart number
-    return (serial == NULL || serial->baudrate == 0);
+    return (serial == NULL || serial->uart_config.baud_rate == 0);
 }
 
 
@@ -207,13 +200,18 @@ int xbee_ser_getchar(xbee_serial_t *serial)
 }
 
 
+/**
+ * @brief   Opens the UART line to xbee module
+ *
+ * @returns some negative number on failure, 0 on success
+ */
 int xbee_ser_open(xbee_serial_t *serial, uint32_t baudrate)
 {
 	if (xbee_ser_invalid(serial)) {
 		return -EINVAL;
 	}
-	serialInit(serial);
-	return xbee_ser_baudrate(serial, baudrate);
+	;
+	return serialInit(serial) || xbee_ser_baudrate(serial, baudrate);
 }
 
 

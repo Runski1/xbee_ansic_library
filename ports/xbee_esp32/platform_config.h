@@ -39,6 +39,8 @@
 	#include <inttypes.h>
     #include <stdbool.h>
 
+    #include "driver/uart.h" // for uart_config_t
+
     // NOTE: Maybe redundant
 	#define _f_memcpy memcpy
 	#define _f_memset memset
@@ -58,8 +60,8 @@
 	
 	typedef struct xbee_serial_t {
         uint32_t        uart_number;
-		uint32_t		baudrate;
-		uint32_t		flow_control;
+        uint32_t        baudrate;
+        uart_config_t   uart_config;
 	} xbee_serial_t;
 
     typedef bool bool_t;

@@ -20,14 +20,14 @@
 
 	#define RX_BUFF_SIZE		255				/* Receive buffer = 2^n -1 for some integer n) */
 	#define TX_BUFF_SIZE		RX_BUFF_SIZE	/* Transmit buffer (same as Rx buffer) */
-	#define XBEE_UART_NUMBER    1				/* The USART peripheral number you are using */
+	#define XBEE_UART_NUMBER    0				/* The USART peripheral number you are using */
     #define XBEE_UART_BAUD_RATE 115200
 
 	/* USART Pin Locations */
-	#define XBEE_TXPIN			17				/* UART1 transmission pin */
-	#define XBEE_RXPIN			18				/* UART1 reception pin */
-	#define XBEE_RTSPIN			19				/* UART1 RTS flow control pin */
-	#define XBEE_CTSPIN			20				/* UART1 CTS flow control pin */
+	#define XBEE_TXPIN			43				/* UART1 transmission pin */
+	#define XBEE_RXPIN			44				/* UART1 reception pin */
+	#define XBEE_RTSPIN			15				/* UART1 RTS flow control pin */
+	#define XBEE_CTSPIN			16				/* UART1 CTS flow control pin */
 
     #define XBEE_SERIAL_ECHO_ON 1
 
