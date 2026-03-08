@@ -18,7 +18,7 @@
 #ifndef __SERIAL_CONFIG_H
 #define __SERIAL_CONFIG_H
 
-	#define RX_BUFF_SIZE		255				/* Receive buffer = 2^n -1 for some integer n) */
+	#define RX_BUFF_SIZE		1024				/* Receive buffer = 2^n -1 for some integer n) */
 	#define TX_BUFF_SIZE		RX_BUFF_SIZE	/* Transmit buffer (same as Rx buffer) */
 	#define XBEE_UART_NUMBER    0				/* The USART peripheral number you are using */
     #define XBEE_UART_BAUD_RATE 115200
