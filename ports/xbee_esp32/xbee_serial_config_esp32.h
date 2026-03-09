@@ -24,8 +24,8 @@
     #define XBEE_UART_BAUD_RATE 115200
 
 	/* USART Pin Locations */
-	#define XBEE_TXPIN			43				/* UART1 transmission pin */
-	#define XBEE_RXPIN			44				/* UART1 reception pin */
+	#define XBEE_TXPIN			9				/* UART1 transmission pin */
+	#define XBEE_RXPIN			3				/* UART1 reception pin */
 	#define XBEE_RTSPIN			15				/* UART1 RTS flow control pin */
 	#define XBEE_CTSPIN			16				/* UART1 CTS flow control pin */
 
